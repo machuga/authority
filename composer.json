@@ -1,0 +1,26 @@
+{
+    "name": "authority",
+    "description": "An Authorization system for PHP",
+    "authors": [
+        {
+            "name": "Matthew Machuga",
+            "email": "machuga@gmail.com"
+        },
+        {
+            "name": "Koen Schmeets",
+            "email": "hello@koenschmeets.nl"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "0.7.*"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "Authority": "src/"
+        }
+    }
+}
