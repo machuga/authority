@@ -8,8 +8,8 @@ class Rule {
 
     public function __construct($behavior, $action, $resource)
     {
-        $this->behavior = $behavior;
-        $this->action = $action;
+        $this->setAction($action);
+        $this->setBehavior($behavior);
         $this->setResource($resource);
     }
 
@@ -21,7 +21,7 @@ class Rule {
     public function matchesResource($resource)
     {
         $resource = is_object($resource) ? get_class($resource) : $resource;
-        return $this->resource === $resource;
+        return $this->resource === $resource || $this->resource === 'all';
     }
 
     public function relevant($action, $resource)
@@ -29,9 +29,24 @@ class Rule {
         return $this->matchesAction($action) && $this->matchesResource($resource);
     }
 
+    public function setAction($action)
+    {
+        $this->action = $action;
+    }
+
+    public function setBehavior($behavior)
+    {
+        $this->behavior = $behavior;
+    }
+
     public function setResource($resource)
     {
         $this->resource = is_object($resource) ? get_class($resource) : $resource;
+    }
+
+    public function getAction()
+    {
+        return $this->action;
     }
 
     public function getBehavior()
@@ -43,5 +58,4 @@ class Rule {
     {
         return $this->resource;
     }
-
 }

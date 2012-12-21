@@ -10,6 +10,11 @@ class RuleTest extends PHPUnit_Framework_Testcase
         $this->rule = new Rule(true, 'read', m::mock('Obj'));
     }
 
+    public function tearDown()
+    {
+        m::close();
+    }
+
     public function testCanBeSetToAllowOrDeny()
     {
         $allowed_rule = new Rule(true, 'read', m::mock('Obj'));
