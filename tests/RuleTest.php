@@ -20,10 +20,10 @@ class RuleTest extends PHPUnit_Framework_Testcase
         $allowed_rule = new Rule(true, 'read', m::mock('Obj'));
         $denied_rule = new Rule(false, 'write', m::mock('Obj'));
         $this->assertTrue($allowed_rule->getBehavior());
-        $this->assertTrue($allowed_rule->isAllowed());
+        $this->assertTrue($allowed_rule->isPrivilege());
 
         $this->assertFalse($denied_rule->getBehavior());
-        $this->assertTrue($denied_rule->isDenied());
+        $this->assertTrue($denied_rule->isRestriction());
     }
 
     public function testCanMatchAction()
@@ -43,5 +43,23 @@ class RuleTest extends PHPUnit_Framework_Testcase
     {
         $this->assertTrue($this->rule->relevant('read', 'Mockery\\Mock'));
         $this->assertFalse($this->rule->relevant('write', 'Mockery\\Mock'));
+    }
+
+    public function testCanSetAndCheckAgainstConditions()
+    {
+        $object1 = new stdClass;
+        $object1->id = 1;
+
+        $object2 = new stdClass;
+        $object2->id = 2;
+
+        $rule = new Rule(true, 'read', 'stdClass', function($obj) { return $obj->id == 1; });
+        $this->assertTrue($rule->isAllowed($object1));
+        $this->assertFalse($rule->isAllowed($object2));
+
+        $rule->when(function($obj) { return 1 == 2; });
+
+        $this->assertFalse($rule->isAllowed($object1));
+        $this->assertFalse($rule->isAllowed($object2));
     }
 }

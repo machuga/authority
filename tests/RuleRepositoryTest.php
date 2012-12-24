@@ -39,7 +39,7 @@ class RuleRepositoryTest extends PHPUnit_Framework_Testcase
     {
         $repo = new RuleRepository($this->rules);
         $rules = $repo->reduce(function($rules, $currentRule) {
-            if ($currentRule->isAllowed()) {
+            if ($currentRule->isPrivilege()) {
                 $rules[] = $currentRule;
             }
             return $rules;
