@@ -20,7 +20,10 @@ class RuleTest extends PHPUnit_Framework_Testcase
         $allowed_rule = new Rule(true, 'read', m::mock('Obj'));
         $denied_rule = new Rule(false, 'write', m::mock('Obj'));
         $this->assertTrue($allowed_rule->getBehavior());
+        $this->assertTrue($allowed_rule->isAllowed());
+
         $this->assertFalse($denied_rule->getBehavior());
+        $this->assertTrue($denied_rule->isDenied());
     }
 
     public function testCanMatchAction()

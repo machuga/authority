@@ -29,6 +29,16 @@ class Rule {
         return $this->matchesAction($action) && $this->matchesResource($resource);
     }
 
+    public function isAllowed()
+    {
+        return $this->getBehavior();
+    }
+
+    public function isDenied()
+    {
+        return ! $this->getBehavior();
+    }
+
     public function setAction($action)
     {
         $this->action = $action;
