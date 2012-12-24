@@ -44,10 +44,4 @@ class RuleTest extends PHPUnit_Framework_Testcase
         $this->assertTrue($this->rule->relevant('read', 'Mockery\\Mock'));
         $this->assertFalse($this->rule->relevant('write', 'Mockery\\Mock'));
     }
-
-
-    public function testThis()
-    {
-        $this->assertTrue(true);
-    }
 }
