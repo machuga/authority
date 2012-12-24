@@ -11,8 +11,8 @@ class RuleRepositoryTest extends PHPUnit_Framework_Testcase
         $this->repo = new RuleRepository;
 
         $this->rules = [
-            new Rule(true, 'read', m::mock('Obj')),
-            new Rule(false, 'write', m::mock('Obj'))
+            new Rule(true, 'read', 'Obj'),
+            new Rule(false, 'write', 'Obj')
         ];
     }
 
@@ -24,7 +24,7 @@ class RuleRepositoryTest extends PHPUnit_Framework_Testcase
     public function testCanStoreRules()
     {
         $repo = new RuleRepository($this->rules);
-        $repo->add(new Rule(true, 'delete', m::mock('Obj')));
+        $repo->add(new Rule(true, 'delete', 'Obj'));
         $this->assertCount(3, $repo);
     }
 
@@ -45,5 +45,14 @@ class RuleRepositoryTest extends PHPUnit_Framework_Testcase
             return $rules;
         });
         $this->assertCount(1, $rules);
+    }
+
+    public function testCanFetchRelevantRules()
+    {
+        $repo = new RuleRepository($this->rules);
+        $this->assertCount(1, $repo->getRelevantRules('read', 'Obj'));
+
+        $repo->add(new Rule(true, 'read', 'Obj'));
+        $this->assertCount(2, $repo->getRelevantRules('read', 'Obj'));
     }
 }
