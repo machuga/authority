@@ -34,4 +34,16 @@ class RuleRepositoryTest extends PHPUnit_Framework_Testcase
         $this->assertSame($this->rules[0], $repo->first());
         $this->assertSame($this->rules[1], $repo->last());
     }
+
+    public function testCanNarrowRulesByReduce()
+    {
+        $repo = new RuleRepository($this->rules);
+        $rules = $repo->reduce(function($rules, $currentRule) {
+            if ($currentRule->isAllowed()) {
+                $rules[] = $currentRule;
+            }
+            return $rules;
+        });
+        $this->assertCount(1, $rules);
+    }
 }
