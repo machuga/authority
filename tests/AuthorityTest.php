@@ -70,4 +70,49 @@ class AuthorityTest extends PHPUnit_Framework_Testcase
 
         $this->assertCount(3, $this->auth->getRulesFor('read', 'User'));
     }
+
+    public function testCanEvaluateRulesForAction()
+    {
+        $this->auth->addAlias('manage', array('create', 'read', 'update', 'delete'));
+        $this->auth->addAlias('comment', array('read', 'comment'));
+
+        $this->auth->allow('manage', 'User');
+        $this->auth->allow('comment', 'User');
+        $this->auth->deny('read', 'User');
+
+        $this->assertTrue($this->auth->can('manage', 'User'));
+        $this->assertTrue($this->auth->can('create', 'User'));
+        $this->assertFalse($this->auth->can('read', 'User'));
+        $this->assertFalse($this->auth->can('explodeEverything', 'User'));
+        $this->assertTrue($this->auth->cannot('explodeEverything', 'User'));
+    }
+
+    public function testCanEvaluateRulesOnObject()
+    {
+        $user = $this->user;
+        $user2 = new stdClass;
+        $user2->id = 2;
+
+        $this->auth->allow('comment', 'User', function ($a_user) use ($user) {
+            return $user->id == $a_user->id;
+        });
+
+        $this->auth->deny('read', 'User', function ($a_user) use ($user) {
+            return $user->id != $a_user->id;
+        });
+
+        $this->assertTrue($this->auth->can('comment', $user));
+        $this->assertTrue($this->auth->can('comment', 'User', $user));
+        $this->assertFalse($this->auth->can('comment', $user2));
+        $this->assertFalse($this->auth->can('comment', 'User', $user2));
+
+        // if we adjust how the current user is retrieved we could have things like this
+        /*
+        $this->auth->setCurrentUser($user2);
+
+        $this->assertEquals($this->auth->getCurrentUser(), $user2);
+        $this->assertTrue($this->auth->cannot('comment', $user));
+        $this->assertFalse($this->auth->cannot('comment', $user2));
+         */
+    }
 }
