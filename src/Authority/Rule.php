@@ -33,7 +33,12 @@ class Rule {
 
     public function isAllowed($resource)
     {
-        return ! $resource || $this->evaluteConditions($resource);
+        $allow = ! $resource || $this->evaluteConditions($resource);
+        if ($this->isPrivilege()) {
+            return $allow;
+        } else {
+            return ! $allow;
+        }
     }
 
     public function when($condition)
@@ -43,9 +48,15 @@ class Rule {
 
     public function evaluteConditions($resource)
     {
-        $result = array_reduce($this->conditions, function($results, $condition) use ($resource) {
-            return $results && $condition($resource);
-        }, true);
+        if ($this->isPrivilege()) {
+            $result = array_reduce($this->conditions, function($results, $condition) use ($resource) {
+                return $results && $condition($resource);
+            }, true);
+        } else {
+            $result = array_reduce($this->conditions, function($results, $condition) use ($resource) {
+                return $results || $condition($resource);
+            }, false);
+        }
 
         return $result;
     }
