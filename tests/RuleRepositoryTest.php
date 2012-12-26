@@ -10,10 +10,10 @@ class RuleRepositoryTest extends PHPUnit_Framework_Testcase
     {
         $this->repo = new RuleRepository;
 
-        $this->rules = [
+        $this->rules = array(
             new Rule(true, 'read', 'Obj'),
             new Rule(false, 'write', 'Obj')
-        ];
+        );
     }
 
     public function tearDown()
