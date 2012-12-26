@@ -9,6 +9,10 @@
         {
             "name": "Koen Schmeets",
             "email": "hello@koenschmeets.nl"
+        },
+        {
+            "name": "Jesse O'Brien",
+            "email": "jesse@jesse-obrien.ca"
         }
     ],
     "require": {
