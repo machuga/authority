@@ -31,7 +31,7 @@ class Rule {
         return $this->matchesAction($action) && $this->matchesResource($resource);
     }
 
-    public function isAllowed($resource)
+    public function isAllowed($resource = null)
     {
         $allow = ! $resource || $this->evaluteConditions($resource);
         if ($this->isPrivilege()) {
