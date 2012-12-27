@@ -1,6 +1,6 @@
 {
-    "name": "Authority",
-    "description": "An Authorization system for PHP",
+    "name": "machuga/Authority",
+    "description": "A simple and flexible authorization system for PHP",
     "authors": [
         {
             "name": "Matthew Machuga",
