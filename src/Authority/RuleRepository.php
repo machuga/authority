@@ -21,16 +21,13 @@ class RuleRepository implements Countable, ArrayAccess, IteratorAggregate
         $this->rules[] = $rule;
     }
 
-    public function reduce(Closure $callback, $initialValue = array(), $asArray = false)
+    public function reduce(Closure $callback, $initialValue = array())
     {
         $rules = array_reduce($this->rules, $callback, $initialValue);
-        if (! $asArray) {
-            $rules = new static($rules);
-        }
-        return $rules;
+        return new static($rules);
     }
 
-    public function getRelevantRules($action, $resource, $asArray = false)
+    public function getRelevantRules($action, $resource)
     {
         $rules = array_reduce($this->rules, function($rules, $currentRule) use ($action, $resource) {
             if ($currentRule->relevant($action, $resource)) {
@@ -39,10 +36,7 @@ class RuleRepository implements Countable, ArrayAccess, IteratorAggregate
             return $rules;
         });
 
-        if ($rules && ! $asArray) {
-            $rules = new static($rules);
-        }
-        return $rules;
+        return new static($rules);
     }
 
     public function first()
