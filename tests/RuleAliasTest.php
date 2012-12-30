@@ -18,8 +18,7 @@ class RuleAliasTest extends PHPUnit_Framework_Testcase
     public function testCanAliasAction()
     {
         $alias = new RuleAlias('manage', array('create', 'read', 'update', 'delete'));
-        //$alias->actions();
-        //$alias->includes('read');
-        $this->assertTrue($alias->includes('read'));
+        $this->assertTrue($alias->includes('create'));
+        $this->assertFalse($alias->includes('edit'));
     }
 }

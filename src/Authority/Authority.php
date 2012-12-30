@@ -15,7 +15,7 @@ class Authority
 
     public function can($action, $resource, $resourceValue = null)
     {
-        if ( ! is_string($resource)) {
+        if (! is_string($resource)) {
             $resourceValue = $resource;
             $resource = get_class($resourceValue);
         }
