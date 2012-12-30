@@ -15,7 +15,7 @@ class Authority
 
     public function can($action, $resource, $resourceValue = null)
     {
-        if ( ! is_string($resource)) {
+        if (! is_string($resource)) {
             $resourceValue = $resource;
             $resource = get_class($resourceValue);
         }
@@ -24,7 +24,7 @@ class Authority
 
         $rules = $this->getRulesFor($action, $resource);
 
-        if ( ! $rules->isEmpty()) {
+        if (! $rules->isEmpty()) {
             $allowed = array_reduce($rules->all(), function($result, $rule) use ($resourceValue) {
                 $result = $result && $rule->isAllowed($resourceValue);
                 return $result;
