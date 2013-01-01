@@ -74,7 +74,7 @@ class AuthorityTest extends PHPUnit_Framework_Testcase
     public function testCanEvaluateRulesForAction()
     {
         $this->auth->addAlias('manage', array('create', 'read', 'update', 'delete'));
-        $this->auth->addAlias('comment', array('read', 'comment'));
+        $this->auth->addAlias('comment', array('read', 'create'));
 
         $this->auth->allow('manage', 'User');
         $this->auth->allow('comment', 'User');
@@ -93,12 +93,12 @@ class AuthorityTest extends PHPUnit_Framework_Testcase
         $user2 = new stdClass;
         $user2->id = 2;
 
-        $this->auth->allow('comment', 'User', function ($a_user) use ($user) {
-            return $user->id == $a_user->id;
+        $this->auth->allow('comment', 'User', function ($self, $a_user) {
+            return $self->getCurrentUser()->id == $a_user->id;
         });
 
-        $this->auth->deny('read', 'User', function ($a_user) use ($user) {
-            return $user->id != $a_user->id;
+        $this->auth->deny('read', 'User', function ($self, $a_user) {
+            return $self->getCurrentUser()->id != $a_user->id;
         });
 
         $this->assertTrue($this->auth->can('comment', $user));

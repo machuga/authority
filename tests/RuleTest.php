@@ -45,6 +45,15 @@ class RuleTest extends PHPUnit_Framework_Testcase
         $this->assertFalse($this->rule->relevant('write', 'Mockery\\Mock'));
     }
 
+    public function testCanSetAndCheckIfAllowed()
+    {
+        $rule = new Rule(true, 'read', 'stdClass');
+        $this->assertTrue($rule->isAllowed());
+
+        $rule2 = new Rule(false, 'read', 'stdClass');
+        $this->assertFalse($rule2->isAllowed());
+    }
+
     public function testCanSetAndCheckPrivilegeAgainstConditions()
     {
         $object1 = new stdClass;
@@ -71,7 +80,9 @@ class RuleTest extends PHPUnit_Framework_Testcase
         $object2 = new stdClass;
         $object2->id = 2;
 
-        $rule = new Rule(false, 'read', 'stdClass', function($obj) { return $obj->id == 1; });
+        $rule = new Rule(false, 'read', 'stdClass', function($obj) {
+            return $obj->id == 1;
+        });
         $this->assertFalse($rule->isAllowed($object1));
         $this->assertTrue($rule->isAllowed($object2));
 

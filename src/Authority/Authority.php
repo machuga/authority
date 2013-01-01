@@ -20,38 +20,38 @@ class Authority
             $resource = get_class($resourceValue);
         }
 
-        $allowed = false;
-
         $rules = $this->getRulesFor($action, $resource);
 
         if (! $rules->isEmpty()) {
             $allowed = array_reduce($rules->all(), function($result, $rule) use ($resourceValue) {
-                $result = $result && $rule->isAllowed($resourceValue);
+                $result = $result && $rule->isAllowed($this, $resourceValue);
                 return $result;
             }, true);
+        } else {
+            $allowed = false;
         }
 
         return $allowed;
     }
 
-    public function cannot($action, $resource, $resourceValue = null)
+    public function cannot($action, $resource, $condition = null)
     {
-        return ! $this->can($action, $resource, $resourceValue);
+        return ! $this->can($action, $resource, $condition);
     }
 
-    public function allow($action, $resource, $resourceValue = null)
+    public function allow($action, $resource, $condition = null)
     {
-        return $this->addRule(true, $action, $resource, $resourceValue);
+        return $this->addRule(true, $action, $resource, $condition);
     }
 
-    public function deny($action, $resource, $resourceValue = null)
+    public function deny($action, $resource, $condition = null)
     {
-        return $this->addRule(false, $action, $resource, $resourceValue);
+        return $this->addRule(false, $action, $resource, $condition);
     }
 
-    public function addRule($allow, $action, $resource, $resourceValue)
+    public function addRule($allow, $action, $resource, $condition = null)
     {
-        $rule = new Rule($allow, $action, $resource, $resourceValue);
+        $rule = new Rule($allow, $action, $resource, $condition);
         $this->rules->add($rule);
         return $rule;
     }

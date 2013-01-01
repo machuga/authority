@@ -31,14 +31,23 @@ class Rule {
         return $this->matchesAction($action) && $this->matchesResource($resource);
     }
 
-    public function isAllowed($resource = null)
+    public function isAllowed()
     {
-        $allow = ! $resource || $this->evaluteConditions($resource);
+        $args = func_get_args();
+
         if ($this->isPrivilege()) {
-            return $allow;
+            $allow = array_reduce($this->conditions, function($results, $condition) use ($args) {
+                return $results && call_user_func_array($condition, $args);
+            }, true);
         } else {
-            return ! $allow;
+            $allow = false;
+            if ($this->conditions) {
+                $allow = ! array_reduce($this->conditions, function($results, $condition) use ($args) {
+                    return $results || call_user_func_array($condition, $args);
+                }, false);
+            }
         }
+        return $allow;
     }
 
     public function when($condition)
@@ -88,7 +97,9 @@ class Rule {
 
     public function addCondition($condition)
     {
-        $this->conditions[] = $condition;
+        if ($condition !== null) {
+            $this->conditions[] = $condition;
+        }
     }
 
     public function getAction()
