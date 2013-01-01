@@ -22,9 +22,11 @@ class Authority
 
         $rules = $this->getRulesFor($action, $resource);
 
+        $self = $this;
+
         if (! $rules->isEmpty()) {
-            $allowed = array_reduce($rules->all(), function($result, $rule) use ($resourceValue) {
-                $result = $result && $rule->isAllowed($this, $resourceValue);
+            $allowed = array_reduce($rules->all(), function($result, $rule) use ($self, $resourceValue) {
+                $result = $result && $rule->isAllowed($self, $resourceValue);
                 return $result;
             }, true);
         } else {
