@@ -7,20 +7,21 @@
  *                                               |__/
  *                                                                               
  * Created by : bngreer
- * Date: 1/8/13
- * Time: 5:32 PM
+ * Date: 1/4/13
+ * Time: 4:59 PM       
+ * Copyright 2013 The WishFoundry / Ben Greer
  * 
  * 
  */
-namespace Authority\Facades;
-use Illuminate\Support\Facades\Facade;
 
-class Authority {
-    /**
-     * Get the registered component.
-     *
-     * @return object
-     */
-    protected static function getFacadeAccessor(){ return 'authority'; }
+return [
+    [
+        'id' => 1,
+        'username' => 'admin',
+        'email' => 'admin@email.com',
+        'password' => Hash::make('password'),
+        'created_at'    => new DateTime,
+        'updated_at'    => new DateTime,
 
-}
+    ],
+];

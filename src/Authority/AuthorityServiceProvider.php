@@ -8,19 +8,27 @@
  *                                                                               
  * Created by : bngreer
  * Date: 1/8/13
- * Time: 5:32 PM
+ * Time: 5:38 PM
  * 
  * 
  */
-namespace Authority\Facades;
-use Illuminate\Support\Facades\Facade;
+namespace Authority;
 
-class Authority {
+use Illuminate\Support\ServiceProvider;
+
+class AuthorityServiceProvider extends ServiceProvider {
+
     /**
-     * Get the registered component.
+     * Register the service provider.
      *
-     * @return object
+     * @return void
      */
-    protected static function getFacadeAccessor(){ return 'authority'; }
+    public function register()
+    {
+        $this->app['authority'] = $this->app->share(function($app)
+        {
+            return new Authority($app);
+        });
+    }
 
 }
