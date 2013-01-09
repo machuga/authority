@@ -14,12 +14,6 @@ namespace Authority;
 class Authority
 {
     /**
-     * Illuminate application instance.
-     *
-     * @var Illuminate\Foundation\Application
-     */
-    protected $app;
-    /**
      * @var mixed Current user in the application for rules to apply to
      */
     protected $currentUser;
@@ -39,17 +33,11 @@ class Authority
      *
      * @param mixed $currentUser Current user in the application
      */
-    public function __construct($app)
+    public function __construct($currentUser)
     {
-        $this->app = $app
         $this->rules = new RuleRepository;
-
-        /**
-         * Set default user (can return null!)
-         */
-        $this->currentUser = $this->app['auth']->user();
+        $this->setCurrentUser($currentUser);
     }
-
 
     /**
      * Determine if current user can access the given action and resource
