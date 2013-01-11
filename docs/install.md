@@ -1,4 +1,4 @@
-<pre># Install and Setup
+# Install and Setup
 
 [Composer](http://www.getcomposer.org) is required to install Authority into your project. 
 
