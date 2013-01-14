@@ -3,13 +3,13 @@
 use Mockery as m;
 use Authority\Events\Dispatcher;
 use Authority\Authority;
-use Illuminate\Container;
+use Illuminate\Container\Container;
 
 class DispatcherTest extends PHPUnit_Framework_Testcase
 {
     public function setUp()
     {
-        $this->dispatcher = new Dispatcher(new Illuminate\Container);
+        $this->dispatcher = new Dispatcher(new Container);
     }
 
     public function tearDown()
