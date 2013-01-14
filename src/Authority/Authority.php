@@ -29,14 +29,39 @@ class Authority
     protected $aliases = array();
 
     /**
+     * @var Dispatcher Dispatcher for events
+     */
+    protected $dispatcher;
+
+    /**
      * Authority constructor
      *
      * @param mixed $currentUser Current user in the application
+     * @param mixed $dispatcher  Dispatcher used for firing events
      */
-    public function __construct($currentUser)
+    public function __construct($currentUser, $dispatcher = null)
     {
         $this->rules = new RuleRepository;
+        $this->setDispatcher($dispatcher);
         $this->setCurrentUser($currentUser);
+
+        $this->dispatch('authority.initialized', array(
+            'user' => $this->getCurrentUser(),
+        ));
+    }
+
+    /**
+     * Fires event from current dispatcher
+     *
+     * @param  string  $eventName
+     * @param  mixed   $payload
+     * @return mixed|null
+     */
+    public function dispatch($eventName, $payload = array())
+    {
+        if ($this->dispatcher) {
+            return $this->dispatcher->fire($eventName, $payload);
+        }
     }
 
     /**
@@ -143,6 +168,17 @@ class Authority
     public function setCurrentUser($currentUser)
     {
         $this->currentUser = $currentUser;
+    }
+
+    /**
+     * Set dispatcher
+     *
+     * @param mixed $dispatcher Dispatcher to fire events
+     * @return void
+     */
+    public function setDispatcher($dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
     }
 
     /**
