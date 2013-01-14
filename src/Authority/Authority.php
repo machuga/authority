@@ -115,6 +115,8 @@ class Authority
      */
     public function addRule($allow, $action, $resource, $condition = null)
     {
+        if(is_callable($condition) )
+            $condition->bindTo($this);
         $rule = new Rule($allow, $action, $resource, $condition);
         $this->rules->add($rule);
         return $rule;
