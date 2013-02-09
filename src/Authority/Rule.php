@@ -88,7 +88,8 @@ class Rule
      */
     public function matchesAction($action)
     {
-        return $this->action === $action;
+        $action = (array) $action;
+        return in_array($this->action, $action);
     }
 
     /**
