@@ -71,7 +71,7 @@ class RuleRepository implements Countable, ArrayAccess, IteratorAggregate
                 $rules[] = $currentRule;
             }
             return $rules;
-        });
+        }, array());
 
         return new static($rules);
     }
