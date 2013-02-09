@@ -75,7 +75,7 @@ class Rule
      * @param string|mixed  $resource Name of resource or instance of object
      * @return boolean
      */
-    public function relevant($action, $resource)
+    public function isRelevant($action, $resource)
     {
         return $this->matchesAction($action) && $this->matchesResource($resource);
     }
