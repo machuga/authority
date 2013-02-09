@@ -67,11 +67,11 @@ class RuleRepository implements Countable, ArrayAccess, IteratorAggregate
     public function getRelevantRules($action, $resource)
     {
         $rules = array_reduce($this->rules, function($rules, $currentRule) use ($action, $resource) {
-            if ($currentRule->relevant($action, $resource)) {
+            if ($currentRule->isRelevant($action, $resource)) {
                 $rules[] = $currentRule;
             }
             return $rules;
-        });
+        }, array());
 
         return new static($rules);
     }
