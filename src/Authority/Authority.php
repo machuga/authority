@@ -189,8 +189,9 @@ class Authority
     public function getRulesFor($action, $resource)
     {
         $aliases = $this->getAliasesForAction($action);
-        return $this->rules->reduce(function($rules, $currentRule) use ($aliases) {
-            if (in_array($currentRule->getAction(), $aliases)) {
+        return $this->rules->reduce(function($rules, $currentRule) use ($aliases, $resource) {
+            if (in_array($currentRule->getAction(), $aliases)
+                && $currentRule->getResource() === $resource) {
                 $rules[] = $currentRule;
             }
             return $rules;
