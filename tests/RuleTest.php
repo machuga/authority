@@ -41,8 +41,9 @@ class RuleTest extends PHPUnit_Framework_TestCase
 
     public function testCanDetermineRelevance()
     {
-        $this->assertTrue($this->rule->relevant('read', 'Mockery\\Mock'));
-        $this->assertFalse($this->rule->relevant('write', 'Mockery\\Mock'));
+        $this->assertTrue($this->rule->isRelevant('read', 'Mockery\\Mock'));
+        $this->assertTrue($this->rule->isRelevant(array('read', 'write'), 'Mockery\\Mock'));
+        $this->assertFalse($this->rule->isRelevant('write', 'Mockery\\Mock'));
     }
 
     public function testCanSetAndCheckIfAllowed()

@@ -101,18 +101,9 @@ class AuthorityTest extends PHPUnit_Framework_TestCase
             return $self->getCurrentUser()->id != $a_user->id;
         });
 
-        $this->assertTrue($this->auth->can('comment', $user));
+        $this->assertFalse($this->auth->can('comment', $user));
         $this->assertTrue($this->auth->can('comment', 'User', $user));
         $this->assertFalse($this->auth->can('comment', $user2));
         $this->assertFalse($this->auth->can('comment', 'User', $user2));
-
-        // if we adjust how the current user is retrieved we could have things like this
-        /*
-        $this->auth->setCurrentUser($user2);
-
-        $this->assertEquals($this->auth->getCurrentUser(), $user2);
-        $this->assertTrue($this->auth->cannot('comment', $user));
-        $this->assertFalse($this->auth->cannot('comment', $user2));
-         */
     }
 }

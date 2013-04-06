@@ -71,6 +71,7 @@ class Authority
      */
     public function can($action, $resource, $resourceValue = null)
     {
+        $self = $this;
         if ( ! is_string($resource)) {
             $resourceValue = $resource;
             $resource = get_class($resourceValue);
@@ -78,12 +79,9 @@ class Authority
 
         $rules = $this->getRulesFor($action, $resource);
 
-        $self = $this;
-
         if (! $rules->isEmpty()) {
             $allowed = array_reduce($rules->all(), function($result, $rule) use ($self, $resourceValue) {
-                $result = $result && $rule->isAllowed($self, $resourceValue);
-                return $result;
+                return $result && $rule->isAllowed($self, $resourceValue);
             }, true);
         } else {
             $allowed = false;
@@ -182,19 +180,14 @@ class Authority
     }
 
     /**
-     * Returns all rules relevant to the given rule and resource
+     * Returns all rules relevant to the given action and resource
      *
      * @return RuleRepository
      */
     public function getRulesFor($action, $resource)
     {
         $aliases = $this->getAliasesForAction($action);
-        return $this->rules->reduce(function($rules, $currentRule) use ($aliases) {
-            if (in_array($currentRule->getAction(), $aliases)) {
-                $rules[] = $currentRule;
-            }
-            return $rules;
-        });
+        return $this->rules->getRelevantRules($aliases, $resource);
     }
 
     /**
