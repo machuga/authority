@@ -3,7 +3,7 @@
 use Mockery as m;
 use Authority\Authority;
 
-class AuthorityTest extends PHPUnit_Framework_Testcase
+class AuthorityTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {

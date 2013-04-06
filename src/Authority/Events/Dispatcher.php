@@ -13,7 +13,7 @@ class Dispatcher extends IlluminateDispatcher
      * @param  mixed   $payload
      * @return Authority\Event
      */
-    public function fire($eventName, $payload = array())
+    public function fire($eventName, $payload = array(), $halt = false)
     {
         if ( ! $payload instanceof SymfonyEvent)
         {
@@ -21,7 +21,7 @@ class Dispatcher extends IlluminateDispatcher
             $payload = new Event($payload);
         }
 
-        return parent::dispatch($eventName, $payload);
+        return parent::fire($eventName, $payload);
     }
 
 }

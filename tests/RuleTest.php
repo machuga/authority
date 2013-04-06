@@ -3,7 +3,7 @@
 use Mockery as m;
 use Authority\Rule;
 
-class RuleTest extends PHPUnit_Framework_Testcase
+class RuleTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {

@@ -4,7 +4,7 @@ use Mockery as m;
 use Authority\Rule;
 use Authority\RuleRepository;
 
-class RuleRepositoryTest extends PHPUnit_Framework_Testcase
+class RuleRepositoryTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {

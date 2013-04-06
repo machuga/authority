@@ -5,7 +5,7 @@ use Authority\Events\Dispatcher;
 use Authority\Authority;
 use Illuminate\Container\Container;
 
-class DispatcherTest extends PHPUnit_Framework_Testcase
+class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {

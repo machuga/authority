@@ -4,7 +4,7 @@ use Mockery as m;
 use Authority\Rule;
 use Authority\RuleAlias;
 
-class RuleAliasTest extends PHPUnit_Framework_Testcase
+class RuleAliasTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
