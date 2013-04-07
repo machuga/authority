@@ -15,13 +15,13 @@ class Dispatcher extends IlluminateDispatcher
      */
     public function fire($eventName, $payload = array(), $halt = false)
     {
-        if ( ! $payload instanceof SymfonyEvent)
+        if (is_array($payload))
         {
             $payload['timestamp'] = new DateTime;
             $payload = new Event($payload);
         }
 
-        return parent::fire($eventName, $payload);
+        return parent::fire($eventName, array($payload));
     }
 
 }

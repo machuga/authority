@@ -1,6 +1,13 @@
 <?php
 namespace Authority\Events;
 
-use Illuminate\Events\Event as IlluminateEvent;
+class Event
+{
+    public function __construct($payload = array()) {
+        $this->payload = $payload;
+    }
 
-class Event extends IlluminateEvent {}
+    public function __get($key) {
+        return $this->payload[$key];
+    }
+}
