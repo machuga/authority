@@ -21,7 +21,7 @@ class Dispatcher extends IlluminateDispatcher
             $payload = new Event($payload);
         }
 
-        return parent::fire($eventName, array($payload));
+        return parent::fire($eventName, array($payload), $halt);
     }
 
 }
