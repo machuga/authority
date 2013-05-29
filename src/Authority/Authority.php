@@ -247,4 +247,14 @@ class Authority
     {
         return $this->currentUser;
     }
+    
+    /**
+     * Returns current user - alias of getCurrentUser()
+     *
+     * @return mixed
+     */
+    public function user()
+    {
+        return $this->getCurrentUser();
+    }
 }
