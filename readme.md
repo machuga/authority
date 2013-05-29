@@ -25,16 +25,20 @@ Further installation information is available in `docs/install.md`
 
 Authority is an authorization system for PHP that focuses more on the concept of activities and resources rather than roles.  Using different user roles is still completely possible and often needed, but rather than determining functionality based on roles throughout your app, Authority allows you to simply check if a user is allowed to perform an action on a given resource or activity.
 
-Example for editing `$post`:
+Let's take an example of editing a Post.
 
+This is a traditional ugly and lengthy if statement that may end up riddled throughout the code base.
 ```php
+// Traditional checking
 if ($user->hasRole('admin') || $user->hasRole('moderator') || $user->hasRole('editor')) {
     // Can perform actions on resource
     $post->delete();   
 }
+```
 
-// versus
-
+Versus Authority's clean and readable if statements
+```php
+// Authority checking
 if ($authority->can('edit', $post)) {
     // Can perform actions on resource
     $post->delete();
