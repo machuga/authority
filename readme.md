@@ -75,7 +75,7 @@ $authority->addAlias('manage', array('create', 'update', 'index', 'read', 'delet
 $authority->allow('read', 'User');
 
 /*
-    * Now let's restrict a User to managing only hiself or herself through
+    * Now let's restrict a User to managing only himself or herself through
     * the use of a conditional callback.
     *
     * Callback Parameters:
@@ -86,7 +86,7 @@ $authority->allow('read', 'User');
 $authority->allow('manage', 'User', function($self, $user) {
     // Here we'll compare id's of the user objects - if they match, permission will
     // be granted, else it will be denied.
-    return $self->user()->id === $user->id;
+    return $self->getCurrentUser()->id === $user->id;
 });
 
 // Now we can check to see if our rules are configured properly
