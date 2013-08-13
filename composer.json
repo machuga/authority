@@ -24,10 +24,15 @@
         "phpunit/phpunit": "3.7.*",
         "mockery/mockery": "0.7.*"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-0": {
             "Authority": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
         }
     }
 }
