@@ -1,100 +1,90 @@
 <?php
 
-use Mockery as m;
+use Mockery as M;
 use Authority\Rule;
 
 class RuleTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->rule = new Rule(true, 'read', m::mock('Obj'));
+        $this->action          = 'read';
+        $this->resourceClass   = 'Obj';
+        $this->resource        = M::mock($this->resourceClass);
+        $this->condition       = function($obj) { return $obj->getId() === 1; };
+        $this->rule            = new Rule('read', $this->resourceClass);
+        $this->conditionalRule = new Rule('read', $this->resourceClass, $this->condition);
+
+        $this->resource->shouldReceive('getId')->andReturn(1);
     }
 
     public function tearDown()
     {
-        m::close();
+        M::close();
     }
 
-    public function testCanBeSetToAllowOrDeny()
+    public function testCanMatchValidAction()
     {
-        $allowed_rule = new Rule(true, 'read', m::mock('Obj'));
-        $denied_rule = new Rule(false, 'write', m::mock('Obj'));
-        $this->assertTrue($allowed_rule->getBehavior());
-        $this->assertTrue($allowed_rule->isPrivilege());
-
-        $this->assertFalse($denied_rule->getBehavior());
-        $this->assertTrue($denied_rule->isRestriction());
+        $this->assertTrue($this->rule->matchesAction($this->action));
     }
 
-    public function testCanMatchAction()
+    public function testCanNotMatchDifferentAction()
     {
-        $this->assertTrue($this->rule->matchesAction('read'));
-        $this->assertFalse($this->rule->matchesAction('write'));
+        $this->assertFalse($this->rule->matchesAction('someDifferentAction'));
     }
 
-    public function testCanMatchResource()
+    public function testCanMatchValidResource()
     {
-        $this->assertTrue($this->rule->matchesResource(m::mock('Obj')));
-        $this->assertTrue($this->rule->matchesResource('Mockery\\Mock'));
-        $this->assertFalse($this->rule->matchesResource('Duck'));
+        $this->assertTrue($this->rule->matchesResource($this->resourceClass));
     }
 
-    public function testCanDetermineRelevance()
+    public function testCanNotMatchDifferentResource()
     {
-        $this->assertTrue($this->rule->isRelevant('read', 'Mockery\\Mock'));
-        $this->assertTrue($this->rule->isRelevant(array('read', 'write'), 'Mockery\\Mock'));
-        $this->assertFalse($this->rule->isRelevant('write', 'Mockery\\Mock'));
+        $this->assertFalse($this->rule->matchesResource('someDifferentResource'));
     }
 
-    public function testCanSetAndCheckIfAllowed()
+    public function testWildcardCanMatchResource()
     {
-        $rule = new Rule(true, 'read', 'stdClass');
-        $this->assertTrue($rule->isAllowed());
+        $rule = new Rule('read', 'all');
 
-        $rule2 = new Rule(false, 'read', 'stdClass');
-        $this->assertFalse($rule2->isAllowed());
+        $this->assertTrue($rule->matchesResource('all'));
     }
 
-    public function testCanSetAndCheckPrivilegeAgainstConditions()
+    public function testWildcardResourceCanMatchAnyResource()
     {
-        $object1 = new stdClass;
-        $object1->id = 1;
+        $rule = new Rule('read', 'all');
 
-        $object2 = new stdClass;
-        $object2->id = 2;
-
-        $rule = new Rule(true, 'read', 'stdClass', function($obj) { return $obj->id == 1; });
-        $this->assertTrue($rule->isAllowed($object1));
-        $this->assertFalse($rule->isAllowed($object2));
-
-        $rule->when(function($obj) { return 1 == 2; });
-
-        $this->assertFalse($rule->isAllowed($object1));
-        $this->assertFalse($rule->isAllowed($object2));
+        $this->assertTrue($rule->matchesResource($this->resourceClass));
     }
 
-    public function testCanSetAndCheckRestrictionAgainstConditions()
+    public function testCanDetermineRelevanceWhenMatching()
     {
-        $object1 = new stdClass;
-        $object1->id = 1;
+        $this->assertTrue($this->rule->isRelevant($this->action, $this->resourceClass));
+    }
 
-        $object2 = new stdClass;
-        $object2->id = 2;
+    public function testCanDetermineIrrelevanceWhenActionNotMatching()
+    {
+        $this->assertFalse($this->rule->isRelevant('someDifferentAction', $this->resourceClass));
+    }
 
-        $rule = new Rule(false, 'read', 'stdClass', function($obj) {
-            return $obj->id == 1;
-        });
-        $this->assertFalse($rule->isAllowed($object1));
-        $this->assertTrue($rule->isAllowed($object2));
+    public function testCanDetermineIrrelevanceWhenResourceNotMatching()
+    {
+        $this->assertFalse($this->rule->isRelevant($this->action, 'someDifferentResource'));
+    }
 
-        $rule->when(function($obj) { return 1 == 2; });
+    public function testCanDetermineIrrelevanceWhenBothNotMatching()
+    {
+        $this->assertFalse($this->rule->isRelevant('someDifferentAction', 'someDifferentResource'));
+    }
 
-        $this->assertFalse($rule->isAllowed($object1));
-        $this->assertTrue($rule->isAllowed($object2));
+    public function testInvokingWithoutConditionWillBeNull()
+    {
+        $rule = $this->rule;
+        $this->assertNull($rule());
+    }
 
-        $rule->when(function($obj) { return 1 == 1; });
-
-        $this->assertFalse($rule->isAllowed($object1));
-        $this->assertFalse($rule->isAllowed($object2));
+    public function testInvokingWithConditionWillReturnResult()
+    {
+        $rule = $this->conditionalRule;
+        $this->assertTrue($rule($this->resource));
     }
 }

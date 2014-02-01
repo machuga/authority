@@ -31,7 +31,7 @@ class RuleAlias
      */
     public function __construct($alias, $actions)
     {
-        $this->alias = $alias;
+        $this->alias   = $alias;
         $this->actions = (array) $actions;
     }
 

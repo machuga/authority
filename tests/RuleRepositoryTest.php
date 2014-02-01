@@ -1,7 +1,6 @@
 <?php
 
-use Mockery as m;
-use Authority\Rule;
+use Mockery as M;
 use Authority\RuleRepository;
 
 class RuleRepositoryTest extends PHPUnit_Framework_TestCase
@@ -10,49 +9,41 @@ class RuleRepositoryTest extends PHPUnit_Framework_TestCase
     {
         $this->repo = new RuleRepository;
 
-        $this->rules = array(
-            new Rule(true, 'read', 'Obj'),
-            new Rule(false, 'write', 'Obj')
-        );
+        $this->relevantRule   = M::mock('Authority\Rule');
+        $this->irrelevantRule = M::mock('Authority\Rule');
+
+        $this->relevantRule->shouldReceive('isRelevant')->andReturn(true);
+        $this->irrelevantRule->shouldReceive('isRelevant')->andReturn(false);
+
+        $this->rules = [$this->relevantRule, $this->irrelevantRule];
+        $this->repo  = new RuleRepository($this->rules);
     }
 
     public function tearDown()
     {
-        m::close();
+        M::close();
     }
 
     public function testCanStoreRules()
     {
-        $repo = new RuleRepository($this->rules);
-        $repo->add(new Rule(true, 'delete', 'Obj'));
-        $this->assertCount(3, $repo);
+        $repo = new RuleRepository();
+        $repo->add($this->relevantRule);
+        $this->assertCount(1, $repo);
     }
 
-    public function testCanReturnEndRules()
+    public function testCanFilterRules()
     {
-        $repo = new RuleRepository($this->rules);
-        $this->assertSame($this->rules[0], $repo->first());
-        $this->assertSame($this->rules[1], $repo->last());
-    }
-
-    public function testCanNarrowRulesByReduce()
-    {
-        $repo = new RuleRepository($this->rules);
-        $rules = $repo->reduce(function($rules, $currentRule) {
-            if ($currentRule->isPrivilege()) {
-                $rules[] = $currentRule;
-            }
-            return $rules;
+        $result = $this->repo->filter(function($item) {
+            return $item->isRelevant(null, null);
         });
-        $this->assertCount(1, $rules);
+
+        $this->assertContainsOnly($this->relevantRule, $result);
     }
 
-    public function testCanFetchRelevantRules()
+    public function testCanReturnOnlyRelevantRules()
     {
-        $repo = new RuleRepository($this->rules);
-        $this->assertCount(1, $repo->getRelevantRules('read', 'Obj'));
-
-        $repo->add(new Rule(true, 'read', 'Obj'));
-        $this->assertCount(2, $repo->getRelevantRules('read', 'Obj'));
+        $result = $this->repo->getRelevantRules('read', 'Post');
+        $this->assertContainsOnly($this->relevantRule, $result);
     }
+
 }
