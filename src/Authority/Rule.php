@@ -11,7 +11,7 @@ namespace Authority;
  *
  * @package Authority
  */
-class Rule
+abstract class Rule
 {
     /**
      * @var string Action the rule applies to
@@ -46,6 +46,13 @@ class Rule
         $this->resource  = $resource;
         $this->condition = $condition;
     }
+
+    /**
+     * Determine if the current rule is considered to be allowed
+     *
+     * @return boolean
+     */
+    abstract public function isAllowed();
 
     /**
      * Determine if current rule is relevant based on an action and resource
@@ -116,10 +123,9 @@ class Rule
      *
      * @return mixed|null
      */
-    public function __invoke()
+    public function checkCondition($argv = [])
     {
         $callback = $this->condition;
-        $argv     = func_get_args();
         $argc     = count($argv);
         $result   = null;
 
@@ -133,5 +139,10 @@ class Rule
             }
             return $result;
         }
+    }
+
+    public function __invoke()
+    {
+        return $this->checkCondition(func_get_args());
     }
 }

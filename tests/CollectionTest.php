@@ -67,4 +67,15 @@ class CollectionTest extends PHPUnit_Framework_TestCase
         $this->assertCount(1, $result);
         $this->assertContains(5, $result);
     }
+
+    public function testCanReduceOverElements()
+    {
+        $collection = new Collection($this->items);
+
+        $result = $collection->reduce(function($total, $item) {
+            return $total += $item;
+        }, 0);
+
+        $this->assertEquals(15, $result);
+    }
 }

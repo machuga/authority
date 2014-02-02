@@ -55,6 +55,16 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable
     }
 
     /**
+     * Reduce collection into single result
+     *
+     * @return Collection
+     */
+    public function reduce(callable $callback, $initial = null)
+    {
+        return array_reduce($this->items, $callback, $initial);
+    }
+
+    /**
      * Find current number of items in collection
      *
      * @return integer

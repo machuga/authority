@@ -1,7 +1,11 @@
 <?php
 
 use Mockery as M;
-use Authority\Rule;
+
+class Rule extends Authority\Rule
+{
+    public function isAllowed() { return true; }
+}
 
 class RuleTest extends PHPUnit_Framework_TestCase
 {
