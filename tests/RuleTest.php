@@ -31,6 +31,11 @@ class RuleTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->rule->matchesAction($this->action));
     }
 
+    public function testCanMatchValidActionInArray()
+    {
+        $this->assertTrue($this->rule->matchesAction([$this->action]));
+    }
+
     public function testCanNotMatchDifferentAction()
     {
         $this->assertFalse($this->rule->matchesAction('someDifferentAction'));
@@ -80,10 +85,10 @@ class RuleTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->rule->isRelevant('someDifferentAction', 'someDifferentResource'));
     }
 
-    public function testInvokingWithoutConditionWillBeNull()
+    public function testInvokingWithoutConditionWillYieldSomeResult()
     {
         $rule = $this->rule;
-        $this->assertNull($rule());
+        $this->assertTrue($rule());
     }
 
     public function testInvokingWithConditionWillReturnResult()

@@ -1,76 +1,154 @@
 <?php
 
-use Mockery as m;
+use Mockery as M;
 use Authority\Authority;
 
 class AuthorityTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->user = new stdClass;
+        $this->user = M::mock('User');
         $this->user->id = 1;
         $this->user->name = 'TestUser';
 
         $this->auth = new Authority($this->user);
+        $this->auth->addAlias('manage', ['create', 'read', 'update', 'delete']);
     }
 
     public function tearDown()
     {
-        m::close();
+        M::close();
     }
 
-    public function testCanStoreCurrentUser()
+    public function testCanResolveResourcePairFromPair()
     {
-        $this->assertSame($this->user, $this->auth->getCurrentUser());
+        $mock = M::mock('DummyClass');
+        $pair = $this->auth->resolveResourcePair('DummyClass', $mock);
 
-        $user = new stdClass;
-        $this->auth->setCurrentUser($user);
-        $this->assertSame($user, $this->auth->getCurrentUser());
+        $this->assertEquals(['DummyClass', $mock], $pair);
+    }
+
+    public function testCanResolveResourcePairFromName()
+    {
+        $pair = $this->auth->resolveResourcePair('DummyClass');
+
+        $this->assertEquals(['DummyClass', null], $pair);
+    }
+
+    public function testCanResolveResourcePairFromObject()
+    {
+        $mock = new stdClass;
+        $pair = $this->auth->resolveResourcePair($mock);
+
+        $this->assertEquals(['stdClass', $mock], $pair);
     }
 
     public function testCanStoreNewPrivilege()
     {
         $rule = $this->auth->allow('read', 'User');
-        $this->assertCount(1, $this->auth->getRules());
+
         $this->assertContains($rule, $this->auth->getRules());
-        $this->assertTrue($rule->getBehavior());
     }
 
     public function testCanStoreNewRestriction()
     {
         $rule = $this->auth->deny('read', 'User');
-        $this->assertCount(1, $this->auth->getRules());
+
         $this->assertContains($rule, $this->auth->getRules());
-        $this->assertFalse($rule->getBehavior());
     }
 
     public function testCanStoreNewAlias()
     {
         $alias = $this->auth->addAlias('manage', array('create', 'read', 'update', 'delete'));
+
         $this->assertContains($alias, $this->auth->getAliases());
-        $this->assertSame($alias, $this->auth->getAlias('manage'));
     }
 
     public function testCanFetchAliasedActions()
     {
-        $this->auth->addAlias('manage', array('create', 'read', 'update', 'delete'));
-        $this->auth->addAlias('comment', array('read', 'comment'));
+        $this->auth->addAlias('comment', ['read', 'comment']);
 
-        $this->assertCount(3, $this->auth->getAliasesForAction('read'));
+        $this->assertCount(3, $this->auth->namesForAction('read'));
     }
 
     public function testCanFetchAllRulesForAction()
     {
-        $this->auth->addAlias('manage', array('create', 'read', 'update', 'delete'));
-        $this->auth->addAlias('comment', array('read', 'comment'));
+        $this->auth->addAlias('comment', ['read', 'comment']);
 
         $this->auth->allow('manage', 'User');
         $this->auth->allow('comment', 'User');
         $this->auth->deny('read', 'User');
 
-        $this->assertCount(3, $this->auth->getRulesFor('read', 'User'));
+        $this->assertCount(3, $this->auth->rulesFor('read', 'User'));
     }
 
+    public function testCanAllowAPrivilege()
+    {
+        $this->auth->allow('read', 'User');
+
+        $this->assertTrue($this->auth->can('read', 'User'));
+    }
+
+    public function testCanAllowAnActionInAnAlias()
+    {
+        $this->auth->allow('manage', 'User');
+
+        $this->assertTrue($this->auth->can('read', 'User'));
+    }
+
+    public function testCanOverridePreviousRule()
+    {
+        $this->auth->allow('read', 'User');
+        $this->auth->deny('read', 'User');
+
+        $this->assertFalse($this->auth->can('read', 'User'));
+    }
+
+    public function testCanOverrideActionInAlias()
+    {
+        $this->auth->allow('manage', 'User');
+        $this->auth->deny('read', 'User');
+
+        $this->assertFalse($this->auth->can('read', 'User'));
+    }
+
+    public function testAliasedActionBehaviorDoesntDependOnActions()
+    {
+        $this->auth->allow('manage', 'User');
+        $this->auth->deny('read', 'User');
+
+        $this->assertTrue($this->auth->can('manage', 'User'));
+    }
+
+    public function testCanAllowPrivilegeWithPassingConstraint()
+    {
+        $this->auth->allow('read', 'User', function($user) { return true; });
+
+        $this->assertTrue($this->auth->can('read', 'User'));
+    }
+
+
+    public function testCanDenyPrivilegeWithFailingConstraint()
+    {
+        $this->auth->allow('read', 'User', function($user) { return false; });
+
+        $this->assertFalse($this->auth->can('read', 'User'));
+    }
+
+    public function testCanDenyRestrictionWithPassingConstraint()
+    {
+        $this->auth->deny('read', 'User', function($user) { return true; });
+
+        $this->assertFalse($this->auth->can('read', 'User'));
+    }
+
+    public function testCanAllowRestrictionWithFailingConstraint()
+    {
+        $this->auth->deny('read', 'User', function($user) { return false; });
+
+        $this->assertTrue($this->auth->can('read', 'User'));
+    }
+/*
     public function testCanEvaluateRulesForAction()
     {
         $this->auth->addAlias('manage', array('create', 'read', 'update', 'delete'));
@@ -119,4 +197,5 @@ class AuthorityTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($this->auth->can('comment', $user));
     }
+*/
 }

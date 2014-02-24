@@ -6,6 +6,7 @@
  */
 namespace Authority;
 
+class NullListener {}
 /**
  * Authority allows for establishing rules to check against for authorization
  *
@@ -26,42 +27,19 @@ class Authority
     /**
      * @var array List of aliases for groups of actions
      */
-    protected $aliases = array();
-
-    /**
-     * @var Dispatcher Dispatcher for events
-     */
-    protected $dispatcher;
+    protected $aliases = [];
 
     /**
      * Authority constructor
      *
      * @param mixed $currentUser Current user in the application
-     * @param mixed $dispatcher  Dispatcher used for firing events
+     * @param mixed $listener    Listener for events on the authority
      */
-    public function __construct($currentUser, $dispatcher = null)
+    public function __construct($currentUser, $listener = null)
     {
-        $this->rules = new RuleRepository;
-        $this->setDispatcher($dispatcher);
-        $this->setCurrentUser($currentUser);
-
-        $this->dispatch('authority.initialized', array(
-            'user' => $this->getCurrentUser(),
-        ));
-    }
-
-    /**
-     * Fires event from current dispatcher
-     *
-     * @param  string  $eventName
-     * @param  mixed   $payload
-     * @return mixed|null
-     */
-    public function dispatch($eventName, $payload = array())
-    {
-        if ($this->dispatcher) {
-            return $this->dispatcher->fire($eventName, $payload);
-        }
+        $this->user     = $currentUser;
+        $this->rules    = new RuleRepository;
+        $this->listener = $listener ?: new NullListener();
     }
 
     /**
@@ -71,23 +49,23 @@ class Authority
      */
     public function can($action, $resource, $resourceValue = null)
     {
-        $self = $this;
-        if ( ! is_string($resource)) {
-            $resourceValue = $resource;
-            $resource = get_class($resourceValue);
-        }
+        list($resource, $resourceValue) =
+            $this->resolveResourcePair($resource, $resourceValue);
 
-        $rules = $this->getRulesFor($action, $resource);
+        $rules = $this->rulesFor($action, $resource);
 
         if (! $rules->isEmpty()) {
-            $allowed = array_reduce($rules->all(), function($result, $rule) use ($self, $resourceValue) {
-                return $result && $rule->isAllowed($self, $resourceValue);
+            $allowed = $rules->reduce(function($result, $rule) use ($resourceValue) {
+                $condition = $rule->getCondition();
+                $condition && $condition->bindTo($this);
+                return $result && $rule->isAllowed($resourceValue);
             }, true);
 
-            $myRules = $rules->all();
-            $last = end($myRules);
+            $last = $rules->last();
 
-            $allowed = $allowed || $last->isAllowed($self, $resourceValue);
+            $condition = $last->getCondition();
+            $condition && $condition->bindTo($this);
+            $allowed = $allowed || $last->isAllowed($resourceValue);
         } else {
             $allowed = false;
         }
@@ -115,7 +93,7 @@ class Authority
      */
     public function allow($action, $resource, $condition = null)
     {
-        return $this->addRule(true, $action, $resource, $condition);
+        return $this->addRule(new Privilege($action, $resource, $condition));
     }
 
     /**
@@ -128,21 +106,17 @@ class Authority
      */
     public function deny($action, $resource, $condition = null)
     {
-        return $this->addRule(false, $action, $resource, $condition);
+        return $this->addRule(new Restriction($action, $resource, $condition));
     }
 
     /**
-     * Define rule for a given action and resource
+     * Add rule to collection
      *
-     * @param boolean       $allow True if privilege, false if restriction
-     * @param string        $action Action for the rule
-     * @param mixed         $resource Resource for the rule
-     * @param Closure|null  $condition Optional condition for the rule
-     * @return Rule
+     * @param Privilege|Restriction Rule to be added to the collection
+     * @return Privilege|Restriction
      */
-    public function addRule($allow, $action, $resource, $condition = null)
+    protected function addRule(Rule $rule)
     {
-        $rule = new Rule($allow, $action, $resource, $condition);
         $this->rules->add($rule);
         return $rule;
     }
@@ -173,24 +147,13 @@ class Authority
     }
 
     /**
-     * Set dispatcher
-     *
-     * @param mixed $dispatcher Dispatcher to fire events
-     * @return void
-     */
-    public function setDispatcher($dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
-
-    /**
      * Returns all rules relevant to the given action and resource
      *
      * @return RuleRepository
      */
-    public function getRulesFor($action, $resource)
+    public function rulesFor($action, $resource)
     {
-        $aliases = $this->getAliasesForAction($action);
+        $aliases = $this->namesForAction($action);
         return $this->rules->getRelevantRules($aliases, $resource);
     }
 
@@ -209,7 +172,7 @@ class Authority
      *
      * @return array
      */
-    public function getAliasesForAction($action)
+    public function namesForAction($action)
     {
         $actions = array($action);
 
@@ -220,6 +183,22 @@ class Authority
         }
 
         return $actions;
+    }
+
+    /**
+     * Cleanly resolve a resource name and pair
+     *
+     * @param mixed $resource      Resource value or name
+     * @param mixed $resourceValue Resource value
+     */
+    public function resolveResourcePair($resource, $resourceValue = null)
+    {
+        if (! is_string($resource)) {
+            $resourceValue = $resource;
+            $resource      = get_class($resourceValue);
+        }
+
+        return [$resource, $resourceValue];
     }
 
     /**

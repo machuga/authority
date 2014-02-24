@@ -127,7 +127,7 @@ abstract class Rule
     {
         $callback = $this->condition;
         $argc     = count($argv);
-        $result   = null;
+        $result   = true;
 
         if ($callback) {
             if ($argc === 0) {
@@ -137,8 +137,8 @@ abstract class Rule
             } else {
                 $result = call_user_func_array($callback, func_get_args());
             }
-            return $result;
         }
+        return $result;
     }
 
     public function __invoke()

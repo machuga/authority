@@ -41,6 +41,21 @@ class CollectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $this->collection[0]);
     }
 
+    public function testCanAccessFirstElement()
+    {
+        $this->collection->push(1);
+
+        $this->assertEquals(1, $this->collection->first());
+    }
+
+    public function testCanAccessLastElement()
+    {
+        $this->collection->push(1);
+        $this->collection->push(2);
+
+        $this->assertEquals(2, $this->collection->last());
+    }
+
     public function testCanDetermineIfEmpty()
     {
         $this->assertTrue($this->collection->isEmpty());

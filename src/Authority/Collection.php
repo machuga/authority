@@ -44,6 +44,29 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable
     }
 
     /**
+     * Get first rule of the collection
+     *
+     * @return void
+     */
+    public function first()
+    {
+        return $this->count() > 0 ? $this[0] : null;
+    }
+
+
+    /**
+     * Get last rule of the collection
+     *
+     * @return void
+     */
+    public function last()
+    {
+        $count = $this->count();
+        $index = $count > 0 ? $count - 1 : 0;
+        return $this[$index];
+    }
+
+    /**
      * Filter collection into another collection
      *
      * @return Collection
