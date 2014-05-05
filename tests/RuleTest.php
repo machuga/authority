@@ -7,7 +7,8 @@ class RuleTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->rule = new Rule(true, 'read', m::mock('Obj'));
+        $this->mock = m::mock('Obj');
+        $this->rule = new Rule(true, 'read', $this->mock);
     }
 
     public function tearDown()
@@ -35,15 +36,14 @@ class RuleTest extends PHPUnit_Framework_TestCase
     public function testCanMatchResource()
     {
         $this->assertTrue($this->rule->matchesResource(m::mock('Obj')));
-        $this->assertTrue($this->rule->matchesResource('Mockery\\Mock'));
         $this->assertFalse($this->rule->matchesResource('Duck'));
     }
 
     public function testCanDetermineRelevance()
     {
-        $this->assertTrue($this->rule->isRelevant('read', 'Mockery\\Mock'));
-        $this->assertTrue($this->rule->isRelevant(array('read', 'write'), 'Mockery\\Mock'));
-        $this->assertFalse($this->rule->isRelevant('write', 'Mockery\\Mock'));
+        $this->assertTrue($this->rule->isRelevant('read', $this->mock));
+        $this->assertTrue($this->rule->isRelevant(array('read', 'write'), $this->mock));
+        $this->assertFalse($this->rule->isRelevant('write', $this->mock));
     }
 
     public function testCanSetAndCheckIfAllowed()
