@@ -107,16 +107,21 @@ class AuthorityTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->auth->can('comment', 'User', $user2));
     }
 
-    public function testLastRuleOverridesPreviousRules()
+    public function testCanCombinedRulesWithConditions()
     {
         $user = $this->user;
+        $user2 = new stdClass;
+        $user2->id = 2;
 
         $this->auth->allow('comment', 'User', function ($self, $a_user) {
-            return $self->getCurrentUser()->id != $a_user->id;
+            return 1 == $a_user->id;
         });
 
-        $this->auth->allow('comment', 'User');
+        $this->auth->allow('comment', 'User', function ($self, $a_user) {
+            return 2 == $a_user->id;
+        });
 
-        $this->assertFalse($this->auth->can('comment', $user));
+        $this->assertTrue($this->auth->can('comment', $user));
+        $this->assertTrue($this->auth->can('comment', $user2));
     }
 }

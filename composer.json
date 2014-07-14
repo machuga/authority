@@ -1,5 +1,6 @@
 {
     "name": "machuga/authority",
+    "version": "2.2.0",
     "description": "A simple and flexible authorization system for PHP",
     "license": "mit",
     "authors": [
@@ -32,7 +33,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.1.x-dev"
+            "dev-master": "2.2.x-dev"
         }
     }
 }

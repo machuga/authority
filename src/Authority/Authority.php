@@ -83,11 +83,6 @@ class Authority
             $allowed = array_reduce($rules->all(), function($result, $rule) use ($self, $resourceValue) {
                 return $result && $rule->isAllowed($self, $resourceValue);
             }, true);
-
-            $myRules = $rules->all();
-            $last = end($myRules);
-
-            $allowed = $allowed || $last->isAllowed($self, $resourceValue);
         } else {
             $allowed = false;
         }
