@@ -53,8 +53,7 @@ class RuleRepository implements Countable, ArrayAccess, IteratorAggregate
      */
     public function reduce(Closure $callback, $initialValue = array())
     {
-        $rules = array_reduce($this->rules, $callback, $initialValue);
-        return new static($rules);
+        return new static(array_reduce($this->rules, $callback, $initialValue));
     }
 
     /**

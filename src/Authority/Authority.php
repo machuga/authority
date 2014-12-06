@@ -87,11 +87,10 @@ class Authority
             $myRules = $rules->all();
             $last = end($myRules);
 
-            $allowed = $allowed || $last->isAllowed($self, $resourceValue);
-        } else {
-            $allowed = false;
+            return ($allowed || $last->isAllowed($self, $resourceValue));
         }
-        return $allowed;
+        
+        return false;
     }
 
     /**

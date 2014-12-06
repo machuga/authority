@@ -54,18 +54,18 @@ class Rule
         $args = func_get_args();
 
         if ($this->isPrivilege()) {
-            $allow = array_reduce($this->conditions, function($results, $condition) use ($args) {
+            return ( array_reduce($this->conditions, function($results, $condition) use ($args) {
                 return $results && call_user_func_array($condition, $args);
-            }, true);
-        } else {
-            $allow = false;
-            if ($this->conditions) {
-                $allow = ! array_reduce($this->conditions, function($results, $condition) use ($args) {
-                    return $results || call_user_func_array($condition, $args);
-                }, false);
-            }
+            }, true));
+        } 
+
+        if ($this->conditions) {
+            return ( ! array_reduce($this->conditions, function($results, $condition) use ($args) {
+                return $results || call_user_func_array($condition, $args);
+            }, false));
         }
-        return $allow;
+
+        return false;
     }
 
     /**
