@@ -36,12 +36,36 @@ class AuthorityTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($rule->getBehavior());
     }
 
+    public function testCanStoreMultiplePrivileges()
+    {
+        $rules = $this->auth->allow(array('read', 'create'), 'User');
+        $this->assertCount(2, $this->auth->getRules());
+        $this->assertCount(2, $rules);
+
+        foreach ($rules as $rule) {
+            $this->assertContains($rule, $this->auth->getRules());
+            $this->assertTrue($rule->getBehavior());
+        }
+    }
+
     public function testCanStoreNewRestriction()
     {
         $rule = $this->auth->deny('read', 'User');
         $this->assertCount(1, $this->auth->getRules());
         $this->assertContains($rule, $this->auth->getRules());
         $this->assertFalse($rule->getBehavior());
+    }
+
+    public function testCanStoreMultipleRestrictions()
+    {
+        $rules = $this->auth->deny(array('read', 'create'), 'User');
+        $this->assertCount(2, $this->auth->getRules());
+        $this->assertCount(2, $rules);
+
+        foreach ($rules as $rule) {
+            $this->assertContains($rule, $this->auth->getRules());
+            $this->assertFalse($rule->getBehavior());
+        }
     }
 
     public function testCanStoreNewAlias()

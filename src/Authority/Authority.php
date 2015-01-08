@@ -108,43 +108,51 @@ class Authority
     /**
      * Define privilege for a given action and resource
      *
-     * @param string        $action Action for the rule
-     * @param mixed         $resource Resource for the rule
-     * @param Closure|null  $condition Optional condition for the rule
-     * @return Rule
+     * @param array|string  $actions    Action for the rule
+     * @param mixed         $resource   Resource for the rule
+     * @param Closure|null  $condition  Optional condition for the rule
+     * @return array|Rule
      */
-    public function allow($action, $resource, $condition = null)
+    public function allow($actions, $resource, $condition = null)
     {
-        return $this->addRule(true, $action, $resource, $condition);
+        return $this->addRule(true, $actions, $resource, $condition);
     }
 
     /**
      * Define restriction for a given action and resource
      *
-     * @param string        $action Action for the rule
-     * @param mixed         $resource Resource for the rule
-     * @param Closure|null  $condition Optional condition for the rule
-     * @return Rule
+     * @param array|string  $actions    Action for the rule
+     * @param mixed         $resource   Resource for the rule
+     * @param Closure|null  $condition  Optional condition for the rule
+     * @return array|Rule
      */
-    public function deny($action, $resource, $condition = null)
+    public function deny($actions, $resource, $condition = null)
     {
-        return $this->addRule(false, $action, $resource, $condition);
+        return $this->addRule(false, $actions, $resource, $condition);
     }
 
     /**
      * Define rule for a given action and resource
      *
-     * @param boolean       $allow True if privilege, false if restriction
-     * @param string        $action Action for the rule
-     * @param mixed         $resource Resource for the rule
-     * @param Closure|null  $condition Optional condition for the rule
-     * @return Rule
+     * @param boolean       $allow      True if privilege, false if restriction
+     * @param array|string  $actions    Action for the rule
+     * @param mixed         $resource   Resource for the rule
+     * @param Closure|null  $condition  Optional condition for the rule
+     * @return array|Rule
      */
-    public function addRule($allow, $action, $resource, $condition = null)
+    public function addRule($allow, $actions, $resource, $condition = null)
     {
-        $rule = new Rule($allow, $action, $resource, $condition);
-        $this->rules->add($rule);
-        return $rule;
+        $rules = array();
+
+        $actions = (array) $actions;
+
+        foreach ($actions as $action) {
+            $rule = new Rule($allow, $action, $resource, $condition);
+            $this->rules->add($rule);
+            $rules[] = $rule;
+        }
+
+        return count($rules) === 1 ? $rules[0] : $rules;
     }
 
     /**
