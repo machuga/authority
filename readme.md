@@ -58,7 +58,7 @@ Two important default behaviors of Authority to keep in mind
 
 ## Basic usage
 
-Authority is intented to be instantiated once per application (though supports multiple instances).  It works well with an IoC (Inversion of Control) container that supports singleton access, like [Laravel's IoC](https://github.com/illuminate/container), or by using standard dependency injection.  You may assign rules prior to your app authorizing resources, or add at any time.  
+Authority is intended to be instantiated once per application (though supports multiple instances).  It works well with an IoC (Inversion of Control) container that supports singleton access, like [Laravel's IoC](https://github.com/illuminate/container), or by using standard dependency injection.  You may assign rules prior to your app authorizing resources, or add at any time.  
 
 The Authority constructor requires at least one argument - the object that represents the current user.  We'll cover the second optional argument later.
 
