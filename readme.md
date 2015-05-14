@@ -1,3 +1,8 @@
+# THIS REPO IS NOW DEPRECATED / EOL'ED
+It's been a fun few years, but I no longer use PHP in the capacity I find necessary to maintain Authority.  It's been this way for a bit, but I'll simply never get a chance to release Authority 3.  If someone else would like to take over this project ping me (@machuga) in an Issue.  Otherwise I highly recommend checking out beatswitch/lock or sentry/cartalyst as your alternative ACL library.
+
+Thanks for your support!
+
 # Authority
 
 A simple and flexible activity/resource based authorization system for PHP
